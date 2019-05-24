@@ -46,9 +46,9 @@ public class RLPlayer {
 
 	int counter = 0;
 
-	// Sprema napredak raèunajuæi nove vrijednosti odigranih stanja.
+	// Sprema napredak racunajuci nove vrijednosti odigranih stanja.
 	// S(t) = S(t) + (S(t+1) - S(t))*stepSize
-	// S(t) je stanje ploèe u koraku t, a S(t+1) stanje ploèe u koraku t+1
+	// S(t) je stanje ploce u koraku t, a S(t+1) stanje ploce u koraku t+1
 	public void backup(boolean tie) {
 		counter++;
 		if (counter % 100000 == 0)

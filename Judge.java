@@ -32,12 +32,12 @@ public class Judge implements ActionListener {
 	private RLPlayer RLPlayer1;
 	private RLPlayer RLPlayer2;
 
-	// Trenutno stanje ploèe
+	// Trenutno stanje ploce
 	private int[][] state;
 	private GameBoardDisplay gameBoardDisplay;
-	// Semafor koji služi za zaustavljanje igre sve dok èovjek ne odabere polje
+	// Semafor koji sluzi za zaustavljanje igre sve dok covjek ne odabere polje
 	private Semaphore waitForHumanPlayer;
-	// red i stupac polja koje je èovjek odabrao
+	// red i stupac polja koje je covjek odabrao
 	private int lastSelectedRow, lastSelectedColumn;
 	private int moveCounter = 0;
 
@@ -46,7 +46,7 @@ public class Judge implements ActionListener {
 		state = new int[Dependencies.GAME_SIZE][Dependencies.GAME_SIZE];
 		// Inicijalizacija semafora s jednom dozvolom
 		waitForHumanPlayer = new Semaphore(1);
-		// Potroši jedinu dozvolu, dozvolu dobivamo tek kad igraè napravi odabir
+		// Potrosi jedinu dozvolu, dozvolu dobivamo tek kada igrac napravi odabir
 		try {
 			waitForHumanPlayer.acquire();
 		} catch (InterruptedException e1) {
@@ -78,7 +78,7 @@ public class Judge implements ActionListener {
 		}
 	}
 
-	// Oznaèava polje u redu row i stupcu column s znakom gm
+	// Oznacava polje u redu row i stupcu column s znakom gm
 	private void setPointMark(int row, int column, GameMark gm) {
 		try {
 			SwingUtilities.invokeAndWait(() -> gameBoardDisplay.setPointMark(row, column, gm));
@@ -96,7 +96,7 @@ public class Judge implements ActionListener {
 		}
 	}
 
-	// Ispisuje brojke estimations u polja ploèe,
+	// Ispisuje brojke estimations u polja ploce,
 	// brojke se ispisuju samo u polja koja su prazna kako nebi prepisali neki od
 	// znakova
 	private void showEstimations(double[][] estimations) {
@@ -108,8 +108,8 @@ public class Judge implements ActionListener {
 
 	private int counter = 0;
 
-	// Prazni ploèu, signalizira igraèima da spreme napredak te ih u konaènici
-	// resetira. Tie oznaèava neriješenost.
+	// Prazni plocu, signalizira igracima da spreme napredak te ih u konacnici
+	// resetira. Tie oznacava nerijesenost.
 	private void reset(boolean tie, boolean backup) {
 		counter++;
 		if (counter % 100000 == 0)
@@ -125,8 +125,8 @@ public class Judge implements ActionListener {
 			for (int j = 0; j < Dependencies.GAME_SIZE; j++)
 				state[i][j] = Empty_SYMBOL;
 
-		// Ponovno crtanje ploèe nas jako usporava, kada su timeouti nula ne osvježavamo
-		// ploèu jer ionako ne vidimo pojedinaène poteze
+		// Ponovno crtanje ploce nas jako usporava, kada su timeouti nula ne osvjezavamo
+		// plocu jer ionako ne vidimo pojedinacne poteze
 		if (RLPlayerTimeout.get() > 0 || gameoverTimeout.get() > 0)
 			for (int i = 0; i < Dependencies.GAME_SIZE; i++)
 				for (int j = 0; j < Dependencies.GAME_SIZE; j++)
@@ -141,14 +141,14 @@ public class Judge implements ActionListener {
 		RLPlayer2.reset();
 	}
 
-	// Èeka èovjekov unos te ga obraðuje. Vraæa true kada je trenutna partija
+	// Ceka covjekov unos te ga obraduje. Vraca true kada je trenutna partija
 	// gotova, partija
-	// završava kada èovjek odustane od igre ili kada pobjedi
+	// zavrsava kada covjek odustane od igre ili kada pobjedi
 	private boolean reset = false;
 
 	private boolean humanPlay() {
 		while (true) {
-			// èekamo dozvolu koja se pojavljuje tek kada èovjek odabere jedno od polja
+			// cekamo dozvolu koja se pojavljuje tek kada covjek odabere jedno od polja
 			try {
 				waitForHumanPlayer.acquire();
 			} catch (InterruptedException e) {
@@ -159,7 +159,7 @@ public class Judge implements ActionListener {
 				reset(true, false);
 				return true;
 			}
-			// izlazimo iz petlje tek onda kada èovjek odabere prazno polje
+			// izlazimo iz petlje tek onda kada covjek odabere prazno polje
 			if (state[lastSelectedRow][lastSelectedColumn] == Empty_SYMBOL)
 				break;
 		}
@@ -168,7 +168,7 @@ public class Judge implements ActionListener {
 		state[lastSelectedRow][lastSelectedColumn] = humanPlayerSimbol.get();
 		moveCounter++;
 		setPointMark(lastSelectedRow, lastSelectedColumn, humanPlayerMark.get());
-		// Neriješeno onda kada se ploèa popuni
+		// Nerijeseno onda kada se ploca popuni
 		boolean tie = moveCounter == Dependencies.GAME_SIZE * Dependencies.GAME_SIZE;
 		if (stateValue == 1 || tie) {
 			reset(tie, true);
@@ -187,7 +187,7 @@ public class Judge implements ActionListener {
 				if (humanPlayerSimbol.get() == X_SYMBOL) {
 					showEstimations(
 							(humanRLOpponent.get() == RLPlayer1 ? RLPlayer2 : RLPlayer1).getStateEstimates(state));
-					// èovjek prestao igrati ili pobjedio
+					// covjek prestao igrati ili pobjedio
 					if (humanPlay())
 						continue;
 				}
@@ -206,7 +206,7 @@ public class Judge implements ActionListener {
 					humanPlay();
 				}
 			} else {
-				// Prikazujemo vrijednosti pojedinih akcija na ploèi
+				// Prikazujemo vrijednosti pojedinih akcija na ploci
 				if (RLPlayerTimeout.get() > 0 || gameoverTimeout.get() > 0)
 					showEstimations(RLPlayer1.getStateEstimates(state));
 				Point p1 = RLPlayer1.act(state);

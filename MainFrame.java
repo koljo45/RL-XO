@@ -12,35 +12,34 @@ import java.text.NumberFormat;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
 
 public class MainFrame extends JFrame implements Runnable, PropertyChangeListener, ActionListener {
 
 	private GameBoardDisplay gamePanel;
-	Judge judge;
+	private Judge judge;
 	private double epsilonRL1 = Dependencies.DEFAULT_EPSILON;
 	private double stepSizeRL1 = Dependencies.DEFAULT_STEP_SIZE;
 	private double epsilonRL2 = Dependencies.DEFAULT_EPSILON;
 	private double stepSizeRL2 = Dependencies.DEFAULT_STEP_SIZE;
-	JFormattedTextField epsilonRL1TF;
-	JFormattedTextField stepSizeRL1TF;
-	JFormattedTextField epsilonRL2TF;
-	JFormattedTextField stepSizeRL2TF;
-	JToggleButton toggleX;
-	JToggleButton toggleO;
+	private JFormattedTextField epsilonRL1TF;
+	private JFormattedTextField stepSizeRL1TF;
+	private JFormattedTextField epsilonRL2TF;
+	private JFormattedTextField stepSizeRL2TF;
+	private JToggleButton toggleX;
+	private JToggleButton toggleO;
+	private int RLTimeout = Dependencies.DEFAULT_RLPLAYER_TIMEOUT;
+	private int gameoverTimeout = Dependencies.DEFAULT_GAMEOVER_TIMEOUT;
 
 	public MainFrame() {
 		// Frame initialization
 		setSize(Dependencies.FRAME_SIZE);
-		setResizable(false);
+		//setResizable(false);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setTitle(Dependencies.GAME_NAME);
 		this.setFocusable(true);
@@ -95,9 +94,22 @@ public class MainFrame extends JFrame implements Runnable, PropertyChangeListene
 
 		JSlider sliderRLTimeout = new JSlider(JSlider.VERTICAL, 0, 2000, Dependencies.DEFAULT_RLPLAYER_TIMEOUT);
 		JSlider sliderGameoverTimeout = new JSlider(JSlider.VERTICAL, 0, 2000, Dependencies.DEFAULT_GAMEOVER_TIMEOUT);
-		sliderRLTimeout.addChangeListener(e -> judge.setRLPlayerTimeout(sliderRLTimeout.getValue()));
-		sliderGameoverTimeout.addChangeListener(e -> judge.setGameoverTimeout(sliderGameoverTimeout.getValue()));
-		
+		sliderRLTimeout.addChangeListener(e -> {
+			boolean oldZero = RLTimeout == 0;
+			RLTimeout = sliderRLTimeout.getValue();
+			judge.setRLPlayerTimeout(RLTimeout);
+			if (RLTimeout == 0 && gameoverTimeout == 0 && !oldZero && !toggleX.isSelected() && !toggleO.isSelected())
+				showTimeoutNoticeDialog();
+
+		});
+		sliderGameoverTimeout.addChangeListener(e -> {
+			boolean oldZero = gameoverTimeout == 0;
+			gameoverTimeout = sliderGameoverTimeout.getValue();
+			judge.setGameoverTimeout(gameoverTimeout);
+			if (gameoverTimeout == 0 && RLTimeout == 0 && !oldZero && !toggleX.isSelected() && !toggleO.isSelected())
+				showTimeoutNoticeDialog();
+		});
+
 		JPanel sliderPanel1 = new JPanel();
 		sliderPanel1.setLayout(new GridLayout(0, 2));
 		sliderPanel1.add(new JLabel(Util.transformStringToHtml("RL Timeout Slider")));
@@ -114,6 +126,14 @@ public class MainFrame extends JFrame implements Runnable, PropertyChangeListene
 		t.setDaemon(true);
 		t.start();
 
+	}
+
+	private void showTimeoutNoticeDialog() {
+		JOptionPane.showMessageDialog(null,
+				"Vremenske pauze za odigrani potez i za kraj partije su sada 0.\n"
+						+ "Korisnièko suèelje više neæe biti osvježavano.\n"
+						+ "Sustav u pozadini igra partije maksimalnom brzinom.",
+				"Napomena", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	@Override
@@ -171,6 +191,8 @@ public class MainFrame extends JFrame implements Runnable, PropertyChangeListene
 				judge.setHumanPlayerSymbol(symbol);
 				judge.setHumanPlaying(true);
 			} else {
+				if (RLTimeout == 0 && gameoverTimeout == 0)
+					showTimeoutNoticeDialog();
 				judge.setHumanPlaying(false);
 			}
 		}

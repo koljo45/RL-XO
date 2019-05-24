@@ -47,13 +47,15 @@ public class XOButton extends JButton {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setStroke(stroke);
 		g.setFont(font);
-		if (buttonSkin == GameMark.X) {
-			g.drawLine(getSize().width / 4, getSize().height / 4, getSize().width * 3 / 4, getSize().height * 3 / 4);
-			g.drawLine(getSize().width * 3 / 4, getSize().height / 4, getSize().width / 4, getSize().height * 3 / 4);
+		int width = getSize().width;
+		int height = getSize().height;
+		if (buttonSkin == GameMark.X) {	
+			g.drawLine(width / 4, height / 4, width * 3 / 4, height * 3 / 4);
+			g.drawLine(width * 3 / 4, height / 4, width / 4, height * 3 / 4);
 		} else if (buttonSkin == GameMark.O) {
-			g.drawOval(getSize().width / 4, getSize().height / 4, getSize().width / 2, getSize().height / 2);
+			g.drawOval(width / 4, height / 4, width / 2, height / 2);
 		} else if (buttonSkin == GameMark.Number) {
-			g2d.drawString("" + number, getSize().width / 2, getSize().height / 2);
+			g2d.drawString("" + number, width / 2, height / 2);
 		}
 	}
 }
