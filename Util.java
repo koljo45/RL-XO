@@ -7,18 +7,18 @@ public final class Util {
 
 	public static Random rnd = ThreadLocalRandom.current();
 
-	public static long hashState(int[][] state) {
-		long hash = 0;
+	public static int hashState(int[][] state) {
+		int hash = 0;
 		for (int i = 0; i < Dependencies.GAME_SIZE; i++)
 			for (int j = 0; j < Dependencies.GAME_SIZE; j++)
 				hash = hash * 3 + state[i][j];
 		return hash;
 	}
 
-	public static long hashNextState(int[][] state, int k, int l, int symbol) {
+	public static int hashNextState(int[][] state, int k, int l, int symbol) {
 		int temp_symbol = state[k][l];
 		state[k][l] = symbol;
-		long hash = hashState(state);
+		int hash = hashState(state);
 		state[k][l] = temp_symbol;
 		return hash;
 	}
@@ -100,17 +100,17 @@ public final class Util {
 		state[row][column] = temp;
 		return 0.5;
 	}
-	
+
 	// Vraæa vertikalni tekst
 	public static String transformStringToHtml(String strToTransform) {
-	    String ans = "<html>";
-	    String br = "<br>";
-	    String[] lettersArr = strToTransform.split("");
-	    for (String letter : lettersArr) {
-	        ans += letter + br;
-	    }
-	    ans += "</html>";
-	    return ans;
+		String ans = "<html>";
+		String br = "<br>";
+		String[] lettersArr = strToTransform.split("");
+		for (String letter : lettersArr) {
+			ans += letter + br;
+		}
+		ans += "</html>";
+		return ans;
 	}
 
 	private Util() {
